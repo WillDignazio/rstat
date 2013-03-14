@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <sqlite3.h>
 #include <argp.h>
+#include "rstat.h"
 
 const char *rstat_version = "rstat v0.1";
 const char *rstat_bug_address = "<slackwill@csh.rit.edu>";
@@ -20,13 +21,15 @@ track improvements over time.";
 static char args_doc[] = "DB_PATH";
 
 static struct argp_option options[] = {
-    {"database path", 'p', 0,  0, "Set rstat database path"},
+    {"path", 'p', "PATH",  0, "Set rstat database path."},
+    {"create", 'c', "PATH",0, "Create a database at the given path."},
     { 0 }
 };
 
 struct arguments
 {
-    char *args[1]; // One for each argument
+    char *args[1]; // One for each argumenta
+    int flags;
     char *db_path;
 };
 
@@ -37,18 +40,20 @@ parse_opt (int key, char *arg, struct argp_state *state) {
     struct arguments *arguments = state->input;
 
     switch( key ) {
-        case 'p':
+        case 'p': // Set database path
             arguments->db_path = arg;
+            break;
+        case 'c': // Create database
+            arguments->db_path = arg;
+            arguments->flags |= RSTAT_CREATE;
             break;
         /* Handle default options for end of argument parsing */
         case ARGP_KEY_ARG: // Too many arguments
-            if(state->arg_num > 1)
+            if(state->arg_num > 2) {
+                printf("Too many arguments.\n");
                 argp_usage(state);
+            }
             arguments->args[state->arg_num] = arg;
-            break;
-        case ARGP_KEY_END: // To few arguments
-            if(state->arg_num < 1)
-                argp_usage(state);
             break;
         default:
             return ARGP_ERR_UNKNOWN;
@@ -66,6 +71,14 @@ int main(int argc, char *argv[]) {
 
     argp_parse(&argp, argc, argv, 0, 0, &arguments);
 
-    return 0;
+    /* Initialize the rstat client */
+    sqlite3 *conn = NULL;
+    rstat_init(arguments.db_path, arguments.flags, &conn);
+
+    runner_t *runner = query_user_info(conn);
+    free(runner);
+
+    /* Close up the rstat client */
+    return rstat_close(&conn);
 }
 
