@@ -73,4 +73,10 @@ char *get_username();
  */
 runner_t *query_user_info(sqlite3 *);
 
+/*
+ * Frees a runner and its constituent pointers, wraps
+ * around free to make it easier.
+ */
+int free_runner(runner_t *);
+
 #endif

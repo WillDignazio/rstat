@@ -26,6 +26,13 @@ runner_t *build_runner(
     return out_r;
 }
 
+int free_runner(runner_t *runner) {
+    if(runner->username != NULL)
+        free(runner->username);
+    free(runner);
+    return RSTAT_SUCCESS;
+}
+
 char *get_username() {
     struct passwd *pw;
     uid_t uid;

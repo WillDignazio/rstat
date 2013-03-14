@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
     rstat_init(arguments.db_path, arguments.flags, &conn);
 
     runner_t *runner = query_user_info(conn);
-    free(runner);
+    free_runner(runner);
 
     /* Close up the rstat client */
     return rstat_close(&conn);
