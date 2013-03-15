@@ -18,10 +18,22 @@ enum {
 typedef struct {
     uid_t uid;                  // Username may change, but UID won't
     char *username;             // WARNING May change
-    char gender;                //'m' or 'f'
-    double height;               // Meters
-    double weight;               // Kilograms
+    char gender;                //'M' or 'F'
+    double height;              // Meters
+    double weight;              // Kilograms
 } runner_t;
+
+/*
+ * Struct that represents a run that the runner has gone on.
+ * Should contain basic information about how long and what
+ * amount of time was spent running.
+ */
+typedef struct {
+    char *location;     // String
+    double time;        // Minutes
+    double distance;    // Meters
+    double temperature; // Deg Celcius
+} run_t;
 
 /*
  * If the user wants to create a new database properly,

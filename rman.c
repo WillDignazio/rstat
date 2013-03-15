@@ -14,8 +14,6 @@
 
 #include "rstat.h"
 
-
-
 int create_database(const char *db_path, sqlite3 **sqconn) {
     printf("Creating %s\n", db_path);
 
@@ -37,11 +35,8 @@ int create_database(const char *db_path, sqlite3 **sqconn) {
     switch(v2err) {
         case SQLITE_OK:
             printf("Create OK.\n");
-            /* Get first user data */
-            runner_t *frunner = query_user_info();
-            printf("Creating table with runner %s\n", frunner->username);
             /* Create table SQL Statement */
-            char *table_create_sql =
+            char *runner_table_sql =
                 "CREATE TABLE IF NOT EXISTS runners("
                         "uid INTEGER PRIMARY KEY,"
                         "username TEXT NOT NULL,"
@@ -49,7 +44,7 @@ int create_database(const char *db_path, sqlite3 **sqconn) {
                         "height REAL NOT NULL,"
                         "weight REAL NOT NULL)";
             /* Execute statement */
-            switch( sqlite3_exec(*sqconn, table_create_sql, 0, 0, 0) ) {
+            switch( sqlite3_exec(*sqconn, runner_table_sql, 0, 0, 0) ) {
                 case SQLITE_OK:
                     printf("Successfully created runner table.\n");
                     break;
@@ -58,10 +53,21 @@ int create_database(const char *db_path, sqlite3 **sqconn) {
                     return RSTAT_FAIL;
             }
 
-            /* Put runner into created database */
-            put_runner(frunner, sqconn);
-            free_runner(frunner);
+            char *run_table_sql =
+                "CREATE TABLE IF NOT EXISTS runs("
+                        "location TEXT NOT NULL,"
+                        "time REAL NOT NULL,"
+                        "distance REAL NOT NULL,"
+                        "temperature REAL NOT NULL)";
 
+            switch( sqlite3_exec(*sqconn, run_table_sql, 0, 0, 0) )  {
+                case SQLITE_OK:
+                    printf("Successfully create runs table.\n");
+                    break;
+                default:
+                    fprintf(stderr, "%s\n", sqlite3_errmsg(*sqconn));
+                    return RSTAT_FAIL;
+            }
             break;
         default:
             fprintf(stderr, "error: %s\n", sqlite3_errmsg(*sqconn));
