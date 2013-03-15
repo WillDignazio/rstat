@@ -73,8 +73,8 @@ int create_database(const char *db_path, sqlite3 **sqconn) {
 
 int put_runner(runner_t *runner, sqlite3 **sqconn){
     char *statement = sqlite3_mprintf(
-            "INSERT INTO runners VALUES"
-            "(%d, %s, %d, %lf, %lf)",
+            "INSERT INTO runners(uid, username, gender, height, weight) "
+            "VALUES(%d, \"%s\", %d, %lf, %lf)",
             runner->uid,
             runner->username,
             runner->gender,
@@ -89,7 +89,7 @@ int put_runner(runner_t *runner, sqlite3 **sqconn){
             fprintf(stderr, "Error: %s", sqlite3_errmsg(*sqconn));
             return RSTAT_FAIL;
     }
-    return RSTAT_SUCCESS;
+    return RSTAT_FAIL;
 }
 
 int rstat_init(const char *db_path, int flags, sqlite3 **sqconn) {
