@@ -41,6 +41,13 @@ int create_database(const char *, sqlite3 **);
 runner_t *build_runner(uid_t, char*, char, double, double);
 
 /*
+ * Puts a runner in the specified database connection.
+ * Creates an SQL statement and uses exec to execute the
+ * sqlite3 statement.
+ */
+int put_runner(runner_t *, sqlite3 **);
+
+/*
  * Initialize the rstat client, forms an active
  * connection to the sqlite database.
  *
@@ -71,7 +78,7 @@ char *get_username();
  * and other account details are gotten from
  * querying the operating system.
  */
-runner_t *query_user_info(sqlite3 *);
+runner_t *query_user_info();
 
 /*
  * Frees a runner and its constituent pointers, wraps

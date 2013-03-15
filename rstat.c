@@ -75,9 +75,6 @@ int main(int argc, char *argv[]) {
     sqlite3 *conn = NULL;
     rstat_init(arguments.db_path, arguments.flags, &conn);
 
-    runner_t *runner = query_user_info(conn);
-    free_runner(runner);
-
     /* Close up the rstat client */
     return rstat_close(&conn);
 }

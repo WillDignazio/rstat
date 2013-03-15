@@ -52,10 +52,11 @@ char *get_username() {
     }
 }
 
-runner_t *query_user_info(sqlite3 *sqconn) {
+runner_t *query_user_info() {
 
     runner_t *runner = calloc(sizeof(runner_t), 1);
     runner->username = get_username();
+    runner->uid = getuid();
 
 gender:
     printf("Gender (M || F): ");
@@ -84,6 +85,7 @@ dirty:
     } while( scanf("%lf", &runner->weight) != 1 );
 
     printf("Built Runner:\n");
+    printf("\tUID: %d\n", runner->uid);
     printf("\tUsername: %s\n", runner->username);
     printf("\tGender: %c\n", runner->gender);
     printf("\tHeight(m): %lf\n", runner->height);

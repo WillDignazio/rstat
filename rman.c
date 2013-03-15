@@ -37,13 +37,58 @@ int create_database(const char *db_path, sqlite3 **sqconn) {
     switch(v2err) {
         case SQLITE_OK:
             printf("Create OK.\n");
-            /* Populate with first entry. */
+            /* Get first user data */
+            runner_t *frunner = query_user_info();
+            printf("Creating table with runner %s\n", frunner->username);
+            /* Create table SQL Statement */
+            char *table_create_sql =
+                "CREATE TABLE IF NOT EXISTS runners("
+                        "uid INTEGER PRIMARY KEY,"
+                        "username TEXT NOT NULL,"
+                        "gender TEXT NOT NULL,"
+                        "height REAL NOT NULL,"
+                        "weight REAL NOT NULL)";
+            /* Execute statement */
+            switch( sqlite3_exec(*sqconn, table_create_sql, 0, 0, 0) ) {
+                case SQLITE_OK:
+                    printf("Successfully created runner table.\n");
+                    break;
+                default:
+                    fprintf(stderr, "%s\n", sqlite3_errmsg(*sqconn));
+                    return RSTAT_FAIL;
+            }
+
+            /* Put runner into created database */
+            put_runner(frunner, sqconn);
+            free_runner(frunner);
+
             break;
         default:
             fprintf(stderr, "error: %s\n", sqlite3_errmsg(*sqconn));
             return RSTAT_FAIL;
     }
     // Build initial user
+    return RSTAT_SUCCESS;
+}
+
+int put_runner(runner_t *runner, sqlite3 **sqconn){
+    char *statement = sqlite3_mprintf(
+            "INSERT INTO runners VALUES"
+            "(%d, %s, %d, %lf, %lf)",
+            runner->uid,
+            runner->username,
+            runner->gender,
+            runner->height,
+            runner->weight);
+    printf("Created sqlite statement\n");
+    switch( sqlite3_exec(*sqconn, statement, 0, 0, 0) ){
+        case SQLITE_OK:
+            printf("Successfully added user to database.\n");
+            return RSTAT_SUCCESS;
+        default:
+            fprintf(stderr, "Error: %s", sqlite3_errmsg(*sqconn));
+            return RSTAT_FAIL;
+    }
     return RSTAT_SUCCESS;
 }
 

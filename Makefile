@@ -17,3 +17,4 @@ rman.o: rstat.h rman.c
 clean: 
 	rm -f rstat
 	rm -f *.o
+	rm -f test.db
