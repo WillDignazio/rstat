@@ -55,6 +55,7 @@ int create_database(const char *db_path, sqlite3 **sqconn) {
 
             char *run_table_sql =
                 "CREATE TABLE IF NOT EXISTS runs("
+                        "uid INTEGER PRIMARY KEY,"
                         "location TEXT NOT NULL,"
                         "time REAL NOT NULL,"
                         "distance REAL NOT NULL,"
@@ -75,27 +76,6 @@ int create_database(const char *db_path, sqlite3 **sqconn) {
     }
     // Build initial user
     return RSTAT_SUCCESS;
-}
-
-int put_runner(runner_t *runner, sqlite3 **sqconn){
-    char *statement = sqlite3_mprintf(
-            "INSERT INTO runners(uid, username, gender, height, weight) "
-            "VALUES(%d, \"%s\", %d, %lf, %lf)",
-            runner->uid,
-            runner->username,
-            runner->gender,
-            runner->height,
-            runner->weight);
-    printf("Created sqlite statement\n");
-    switch( sqlite3_exec(*sqconn, statement, 0, 0, 0) ){
-        case SQLITE_OK:
-            printf("Successfully added user to database.\n");
-            return RSTAT_SUCCESS;
-        default:
-            fprintf(stderr, "Error: %s", sqlite3_errmsg(*sqconn));
-            return RSTAT_FAIL;
-    }
-    return RSTAT_FAIL;
 }
 
 int rstat_init(const char *db_path, int flags, sqlite3 **sqconn) {

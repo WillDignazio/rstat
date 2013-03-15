@@ -12,6 +12,27 @@
 
 #include "rstat.h"
 
+int put_runner(runner_t *runner, sqlite3 **sqconn){
+    char *statement = sqlite3_mprintf(
+            "INSERT INTO runners(uid, username, gender, height, weight) "
+            "VALUES(%d, \"%s\", %d, %lf, %lf)",
+            runner->uid,
+            runner->username,
+            runner->gender,
+            runner->height,
+            runner->weight);
+    printf("Created sqlite statement\n");
+    switch( sqlite3_exec(*sqconn, statement, 0, 0, 0) ){
+        case SQLITE_OK:
+            printf("Successfully added user to database.\n");
+            return RSTAT_SUCCESS;
+        default:
+            fprintf(stderr, "Error: %s", sqlite3_errmsg(*sqconn));
+            return RSTAT_FAIL;
+    }
+    return RSTAT_FAIL;
+}
+
 runner_t *build_runner(
         uid_t uid,
         char *username,

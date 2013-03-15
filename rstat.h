@@ -29,6 +29,7 @@ typedef struct {
  * amount of time was spent running.
  */
 typedef struct {
+    uid_t uid;          // Associative key
     char *location;     // String
     double time;        // Minutes
     double distance;    // Meters
@@ -58,6 +59,11 @@ runner_t *build_runner(uid_t, char*, char, double, double);
  * sqlite3 statement.
  */
 int put_runner(runner_t *, sqlite3 **);
+
+/*
+ * Puts a run in the specified database connection
+ */
+int put_run(run_t *, sqlite3 **);
 
 /*
  * Initialize the rstat client, forms an active
