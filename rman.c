@@ -55,11 +55,12 @@ int create_database(const char *db_path, sqlite3 **sqconn) {
 
             char *run_table_sql =
                 "CREATE TABLE IF NOT EXISTS runs("
-                        "uid INTEGER PRIMARY KEY,"
+                        "uid INTEGER NOT NULL,"
                         "location TEXT NOT NULL,"
                         "time REAL NOT NULL,"
                         "distance REAL NOT NULL,"
-                        "temperature REAL NOT NULL)";
+                        "temperature REAL NOT NULL,"
+                        "FOREIGN KEY (uid) REFERENCES runners(uid))";
 
             switch( sqlite3_exec(*sqconn, run_table_sql, 0, 0, 0) )  {
                 case SQLITE_OK:
@@ -82,19 +83,40 @@ int rstat_init(const char *db_path, int flags, sqlite3 **sqconn) {
 
     if( (flags & RSTAT_CREATE) ) {
         printf("creating database...\n");
-        create_database(db_path, sqconn);
-    } else {
-        int oerr = sqlite3_open_v2(db_path, sqconn, SQLITE_OPEN_READWRITE, NULL);
-        switch(oerr) {
-            case SQLITE_OK:
-                printf("OK.\n");
+        int cerr = create_database(db_path, sqconn);
+        switch(cerr) {
+            case RSTAT_SUCCESS:
+                printf("Successfully created and opened database.\n");
                 break;
-            default:
-                fprintf(stderr, "error: %s\n", sqlite3_errmsg(*sqconn));
-                break;
+            case RSTAT_FAIL:
+                fprintf(stderr, "Failed to create and open database.\n");
+                sqlite3_close(*sqconn);
+                return RSTAT_FAIL; // Just stop here before anything else happens
         }
     }
 
+    if( (flags & RSTAT_USER_CREATE) ){
+        printf("creating user...\n");
+        runner_t *nrunner = query_user_info();
+        int perr = put_runner(nrunner, sqconn);
+        switch(perr) {
+            case RSTAT_SUCCESS:
+                printf("Successfully created and put user.\n");
+                break;
+            case RSTAT_FAIL:
+                fprintf(stderr, "Failed to create and put user.\n");
+                return RSTAT_FAIL;
+        }
+    }
+    int oerr = sqlite3_open_v2(db_path, sqconn, SQLITE_OPEN_READWRITE, NULL);
+    switch(oerr) {
+        case SQLITE_OK:
+            printf("OK.\n");
+            break;
+        default:
+            fprintf(stderr, "error: %s\n", sqlite3_errmsg(*sqconn));
+            break;
+    }
     // If we got to here, we should be good to go.
 
     return RSTAT_SUCCESS;

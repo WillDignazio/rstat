@@ -7,8 +7,17 @@ enum {
     RSTAT_SUCCESS,
     RSTAT_FAIL,
     RSTAT_CREATE,
+    RSTAT_USER_CREATE,
     RSTAT_NOCREATE
-};
+} RSTAT_STATUS;
+
+enum {
+    QUERY_ROW_UID,
+    QUERY_ROW_LOCATION,
+    QUERY_ROW_TIME,
+    QUERY_ROW_DISTNCE,
+    QUERY_ROW_TEMPERATURE
+} QUERY_ROWS;
 
 /*
  * Struct that represents a user within the sqlite3

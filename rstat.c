@@ -23,12 +23,13 @@ static char args_doc[] = "DB_PATH";
 static struct argp_option options[] = {
     {"path", 'p', "PATH",  0, "Set rstat database path."},
     {"create", 'c', "PATH",0, "Create a database at the given path."},
+    {"new-user", 'n', 0,   0, "Create a new user for yourself"},
     { 0 }
 };
 
 struct arguments
 {
-    char *args[1]; // One for each argumenta
+    char *args[1]; // One for each argument
     int flags;
     char *db_path;
 };
@@ -40,10 +41,16 @@ parse_opt (int key, char *arg, struct argp_state *state) {
     struct arguments *arguments = state->input;
 
     switch( key ) {
+        case 'n': // Create user entry
+            printf("Set create user flag.\n");
+            arguments->flags |= RSTAT_USER_CREATE;
+            break;
         case 'p': // Set database path
+            printf("Set path.\n");
             arguments->db_path = arg;
             break;
         case 'c': // Create database
+            printf("Set path and create flag.\n");
             arguments->db_path = arg;
             arguments->flags |= RSTAT_CREATE;
             break;
