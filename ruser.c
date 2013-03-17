@@ -34,8 +34,10 @@ int user_exists(sqlite3 **sqconn) {
     printf("User Exists: %s\n", exists ? "yes":"no");
     if(exists) {
         fprintf(stderr, "You user already exists in database.");
+        sqlite3_finalize(res);
         return 1; // User exists, no go
     }
+    sqlite3_finalize(res);
     return 0; // User does not exist
 }
 
