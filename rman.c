@@ -81,7 +81,7 @@ int create_database(const char *db_path, sqlite3 **sqconn) {
 
 int rstat_init(const char *db_path, int flags, sqlite3 **sqconn) {
 
-    if( (flags & RSTAT_CREATE) ) {
+    if( (flags & RSTAT_DATABASE_CREATE) ) {
         printf("creating database...\n");
         int cerr = create_database(db_path, sqconn);
         switch(cerr) {
@@ -95,19 +95,7 @@ int rstat_init(const char *db_path, int flags, sqlite3 **sqconn) {
         }
     }
 
-    if( (flags & RSTAT_USER_CREATE) ){
-        printf("creating user...\n");
-        runner_t *nrunner = query_user_info();
-        int perr = put_runner(nrunner, sqconn);
-        switch(perr) {
-            case RSTAT_SUCCESS:
-                printf("Successfully created and put user.\n");
-                break;
-            case RSTAT_FAIL:
-                fprintf(stderr, "Failed to create and put user.\n");
-                return RSTAT_FAIL;
-        }
-    }
+    printf("Opening path %s\n", db_path);
     int oerr = sqlite3_open_v2(db_path, sqconn, SQLITE_OPEN_READWRITE, NULL);
     switch(oerr) {
         case SQLITE_OK:
@@ -116,6 +104,28 @@ int rstat_init(const char *db_path, int flags, sqlite3 **sqconn) {
         default:
             fprintf(stderr, "error: %s\n", sqlite3_errmsg(*sqconn));
             break;
+    }
+
+    if( (flags & RSTAT_USER_CREATE) ){
+        printf("creating user...\n");
+        /*
+         * Before we go any further, we should check to
+         * see if this users UID exists within the database. In
+         * which case this user would not be allowed to create an
+         * identical user in the database.
+         */
+        if(!user_exists(sqconn)) {
+            runner_t *nrunner = query_user_info();
+            int perr = put_runner(nrunner, sqconn);
+            switch(perr) {
+                case RSTAT_SUCCESS:
+                    printf("Successfully created and put user.\n");
+                    break;
+                case RSTAT_FAIL:
+                    fprintf(stderr, "Failed to create and put user.\n");
+                    return RSTAT_FAIL;
+            }
+        }
     }
     // If we got to here, we should be good to go.
 

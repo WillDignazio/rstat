@@ -3,12 +3,12 @@
 
 #include <sqlite3.h>
 
+#define RSTAT_USER_CREATE (unsigned char) 0x1
+#define RSTAT_DATABASE_CREATE (unsigned char) 0x2
+
 enum {
     RSTAT_SUCCESS,
     RSTAT_FAIL,
-    RSTAT_CREATE,
-    RSTAT_USER_CREATE,
-    RSTAT_NOCREATE
 } RSTAT_STATUS;
 
 enum {
@@ -52,6 +52,13 @@ typedef struct {
  * location.
  */
 int create_database(const char *, sqlite3 **);
+
+/*
+ * Checks whether the current user exists within the
+ * running database. This is determined by grabbing the
+ * users UID and looking for its existance in the database.
+ */
+int user_exists(sqlite3**);
 
 /*
  * Builds a runner type struct, returns the address of

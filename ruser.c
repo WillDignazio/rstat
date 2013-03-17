@@ -12,7 +12,35 @@
 
 #include "rstat.h"
 
+int user_exists(sqlite3 **sqconn) {
+
+    printf("Building search statement.\n");
+    char *search_statement = sqlite3_mprintf(
+            "SELECT EXISTS(SELECT 1 FROM runners WHERE uid=\"%d\" LIMIT 1)",
+            getuid()); // The current users UID
+
+    const char *tail;
+    sqlite3_stmt *res;
+    // Produce safe bytecode for the search.
+    sqlite3_prepare_v2(*sqconn, search_statement, 1000, &res, &tail);
+    sqlite3_step(res); // We are gauranteed at least one row for this statement.
+    printf("Stepped through return statement.\n");
+
+    /* We must check whether the user exists within the
+     * database, if so, they may not create another user
+     * within it.
+     */
+    char exists = sqlite3_column_int(res, 0); // Will be either 0 or 1
+    printf("User Exists: %s\n", exists ? "yes":"no");
+    if(exists) {
+        fprintf(stderr, "You user already exists in database.");
+        return 1; // User exists, no go
+    }
+    return 0; // User does not exist
+}
+
 int put_runner(runner_t *runner, sqlite3 **sqconn){
+
     char *statement = sqlite3_mprintf(
             "INSERT INTO runners(uid, username, gender, height, weight) "
             "VALUES(%d, \"%s\", %d, %lf, %lf)",

@@ -52,7 +52,7 @@ parse_opt (int key, char *arg, struct argp_state *state) {
         case 'c': // Create database
             printf("Set path and create flag.\n");
             arguments->db_path = arg;
-            arguments->flags |= RSTAT_CREATE;
+            arguments->flags |= RSTAT_DATABASE_CREATE;
             break;
         /* Handle default options for end of argument parsing */
         case ARGP_KEY_ARG: // Too many arguments
@@ -75,6 +75,7 @@ int main(int argc, char *argv[]) {
 
     /* Set default values */
     arguments.db_path = "/var/lib/rstat/rstat.db";
+    arguments.flags = 0;
 
     argp_parse(&argp, argc, argv, 0, 0, &arguments);
 
