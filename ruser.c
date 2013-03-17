@@ -67,11 +67,12 @@ runner_t *build_runner(
         char gender,
         double height,
         double weight) {
-    runner_t *out_r = malloc(sizeof(runner_t));
+    runner_t *out_r = calloc(sizeof(runner_t), 1);
     out_r->uid = uid;
     out_r->username = username;
     out_r->height = height;
     out_r->weight = weight;
+    out_r->next = NULL;
     return out_r;
 }
 

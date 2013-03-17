@@ -24,12 +24,13 @@ enum {
  * database. Each field respresents a table value for
  * each particular user.
  */
-typedef struct {
+typedef struct runner {
     uid_t uid;                  // Username may change, but UID won't
     char *username;             // WARNING May change
     char gender;                //'M' or 'F'
     double height;              // Meters
     double weight;              // Kilograms
+    struct runner* next;        // For lists of users
 } runner_t;
 
 /*
@@ -37,12 +38,13 @@ typedef struct {
  * Should contain basic information about how long and what
  * amount of time was spent running.
  */
-typedef struct {
+typedef struct run {
     uid_t uid;          // Associative key
     char *location;     // String
     double time;        // Minutes
     double distance;    // Meters
     double temperature; // Deg Celcius
+    struct run* next;   // For lists of runs
 } run_t;
 
 /*
@@ -68,6 +70,12 @@ int user_exists(sqlite3**);
  * and the runners total kilometers.
  */
 runner_t *build_runner(uid_t, char*, char, double, double);
+
+/*
+ * Build run, builds a run object that represents a
+ * run a runner has gone on.
+ */
+run_t *build_run(uid_t, char*, double, double, double);
 
 /*
  * Puts a runner in the specified database connection.

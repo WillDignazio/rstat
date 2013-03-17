@@ -9,8 +9,21 @@
 
 #include "rstat.h"
 
-int put_run(run_t *run, sqlite3 **sqconn) {
+run_t *build_run(uid_t uid,
+                 char *location,
+                 double time,
+                 double distance,
+                 double temperature) {
+    run_t *run = calloc(sizeof(run_t), 1);
+    run->uid = uid;
+    run->time = time;
+    run->distance = distance;
+    run->temperature = temperature;
+    run->next = NULL;
+    return run;
+}
 
+int put_run(run_t *run, sqlite3 **sqconn) {
     char *statement = sqlite3_mprintf(
             "INSERT INTO run(uid, location, time, distance, temperature) "
             "VALUES(%d, \"%s\", %lf, %lf, %lf)",
