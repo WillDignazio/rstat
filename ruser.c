@@ -43,7 +43,7 @@ int user_exists(sqlite3 **sqconn) {
 
 runner_t *get_runner_by_uid(uid_t uid, sqlite3 **sqconn) {
     char *search_statement = sqlite3_mprintf(
-            "select runners.* from runners where runners.uid is %d",
+            "SELECT runners.* FROM runners WHERE runners.uid IS %d",
             uid);
     sqlite3_stmt *res;
     sqlite3_prepare_v2(*sqconn, search_statement, 1000, &res, NULL);
@@ -55,12 +55,36 @@ runner_t *get_runner_by_uid(uid_t uid, sqlite3 **sqconn) {
                 sqlite3_column_int(res, 2),
                 sqlite3_column_double(res, 3),
                 sqlite3_column_double(res, 4));
+        sqlite3_free(search_statement);
         return runner;
     } else {
         DEBUG(printf("Could not find user by uid %d", uid));
+        sqlite3_free(search_statement);
         return NULL;
     }
-    sqlite3_free(search_statement);
+}
+
+runner_t *get_runner_by_username(const char *username, sqlite3 **sqconn) {
+    char *search_statement = sqlite3_mprintf(
+            "SELECT runners.* FROM runners WHERE runners.username IS \"%s\"",
+            username);
+    sqlite3_stmt *res;
+    sqlite3_prepare_v2(*sqconn, search_statement, 1000, &res, NULL);
+    if( sqlite3_step(res) == SQLITE_ROW ) {
+        // Found that user
+        runner_t *runner = build_runner(
+                sqlite3_column_int(res, 0),
+                (char*)sqlite3_column_text(res, 1),
+                sqlite3_column_int(res, 2),
+                sqlite3_column_double(res, 3),
+                sqlite3_column_double(res, 4));
+        sqlite3_free(search_statement);
+        return runner;
+    } else {
+        DEBUG(printf("Could not find user by username %s", username));
+        sqlite3_free(search_statement);
+        return NULL;
+    }
 }
 
 int put_runner(runner_t *runner, sqlite3 **sqconn){

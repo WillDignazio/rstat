@@ -160,9 +160,16 @@ void print_runs(run_t *);
 
 /*
  * Gets a runner from the database, and returns them as
- * a runer_t object. While using this function, one can expect
+ * a runner_t object. While using this function, one can expect
  * the next attribute to be NULL.
  */
 runner_t *get_runner_by_uid(uid_t, sqlite3 **);
+
+/*
+ * Gets a runner from the database by username, and returns it
+ * as a runner_t object. This function shall set the runner's next
+ * value to NULL.
+ */
+runner_t *get_runner_by_username(const char*, sqlite3 **);
 
 #endif
