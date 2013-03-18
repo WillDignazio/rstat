@@ -123,9 +123,21 @@ char *get_username();
 runner_t *query_user_info();
 
 /*
+ * Queries for run information, builds and returns
+ * a pointer to a run object.
+ */
+run_t *query_run_info();
+
+/*
  * Frees a runner and its constituent pointers, wraps
  * around free to make it easier.
  */
 int free_runner(runner_t *);
+
+/*
+ * Frees a run and its constituent pointers, wraps
+ * around free to make freeing a run easier.
+ */
+int free_run(run_t *);
 
 #endif

@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sqlite3.h>
 #include <argp.h>
 #include "rstat.h"
@@ -82,6 +83,7 @@ int main(int argc, char *argv[]) {
     /* Initialize the rstat client */
     sqlite3 *conn = NULL;
     rstat_init(arguments.db_path, arguments.flags, &conn);
+    rstat_close(&conn);
 
     /* Close up the rstat client */
     return rstat_close(&conn);

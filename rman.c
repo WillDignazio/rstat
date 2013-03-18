@@ -68,13 +68,16 @@ int create_database(const char *db_path, sqlite3 **sqconn) {
                     break;
                 default:
                     fprintf(stderr, "%s\n", sqlite3_errmsg(*sqconn));
+                    sqlite3_close(*sqconn);
                     return RSTAT_FAIL;
             }
             break;
         default:
             fprintf(stderr, "error: %s\n", sqlite3_errmsg(*sqconn));
+            sqlite3_close(*sqconn);
             return RSTAT_FAIL;
     }
+    sqlite3_close(*sqconn);
     // Build initial user
     return RSTAT_SUCCESS;
 }
@@ -103,7 +106,7 @@ int rstat_init(const char *db_path, int flags, sqlite3 **sqconn) {
             break;
         default:
             fprintf(stderr, "error: %s\n", sqlite3_errmsg(*sqconn));
-            break;
+            return RSTAT_FAIL;
     }
 
     if( (flags & RSTAT_USER_CREATE) ){
@@ -123,12 +126,12 @@ int rstat_init(const char *db_path, int flags, sqlite3 **sqconn) {
                     break;
                 case RSTAT_FAIL:
                     fprintf(stderr, "Failed to create and put user.\n");
+                    free_runner(nrunner);
                     return RSTAT_FAIL;
             }
         }
     }
     // If we got to here, we should be good to go.
-
     return RSTAT_SUCCESS;
 }
 
