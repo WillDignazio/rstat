@@ -147,4 +147,15 @@ int free_runner(runner_t *);
  */
 int free_run(run_t *);
 
+/* Prints a single runs data, line by line in order
+ * as defined by the run_t struct.
+ */
+void print_run(run_t *);
+
+/*
+ * Takes a run, and until it reaches a null next node,
+ * will print the run data.
+ */
+void print_runs(run_t *);
+
 #endif

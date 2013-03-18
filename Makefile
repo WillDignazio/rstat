@@ -1,5 +1,5 @@
 CC= clang
-CFLAGS= -ggdb -O  -Wall -Werror
+CFLAGS= -ggdb -O  -Wall -Werror -D_DEBUG
 LIBS= -lsqlite3
 
 rstat: rstat.o ruser.o rman.o rrun.o

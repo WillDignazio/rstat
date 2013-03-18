@@ -13,6 +13,21 @@
 
 #include "rstat.h"
 
+void print_run(run_t* run) {
+    printf("Run Location: %s\n", run->location);
+    printf("Run Time (Minutes): %lf\n", run->time);
+    printf("Run Distance (Meters): %lf\n", run->distance);
+    printf("Run Temperature(Celcius): %lf\n", run->temperature);
+}
+
+void print_runs(run_t *run) {
+    do {
+        print_run(run);
+        printf("---------------------------------\n");
+    } while(run->next != NULL);
+}
+
+
 run_t *get_runs(runner_t *runner, sqlite3 **sqconn) {
     char *sqlite3_query =
         "SELECT runs.* FROM runners "
