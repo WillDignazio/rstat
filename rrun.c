@@ -17,7 +17,7 @@ void print_run(run_t* run) {
     printf("Run Location: %s\n", run->location);
     printf("Run Time (Minutes): %lf\n", run->time);
     printf("Run Distance (Meters): %lf\n", run->distance);
-    printf("Run Temperature(Celcius): %lf\n", run->temperature);
+    printf("Run Temperature (Celcius): %lf\n", run->temperature);
 }
 
 void print_runs(run_t *run) {
@@ -89,6 +89,7 @@ int put_run(run_t *run, sqlite3 **sqconn) {
             run->time,
             run->distance,
             run->temperature);
+
     DEBUG(printf("Created sql run statement.\n"));
     switch( sqlite3_exec(*sqconn, statement, 0, 0, 0) ) {
         case SQLITE_OK:

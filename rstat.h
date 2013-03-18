@@ -158,4 +158,11 @@ void print_run(run_t *);
  */
 void print_runs(run_t *);
 
+/*
+ * Gets a runner from the database, and returns them as
+ * a runer_t object. While using this function, one can expect
+ * the next attribute to be NULL.
+ */
+runner_t *get_runner_by_uid(uid_t, sqlite3 **);
+
 #endif
