@@ -14,7 +14,7 @@
 
 int user_exists(sqlite3 **sqconn) {
 
-    printf("Building search statement.\n");
+    DEBUG(printf("Building search statement.\n"));
     char *search_statement = sqlite3_mprintf(
             "SELECT EXISTS(SELECT 1 FROM runners WHERE uid=\"%d\" LIMIT 1)",
             getuid()); // The current users UID
@@ -23,7 +23,7 @@ int user_exists(sqlite3 **sqconn) {
     // Produce safe bytecode for the search.
     sqlite3_prepare_v2(*sqconn, search_statement, 1000, &res, NULL);
     sqlite3_step(res); // We are gauranteed at least one row for this statement.
-    printf("Stepped through return statement.\n");
+    DEBUG(printf("Stepped through return statement.\n"));
     // Free the allocated search statement
     sqlite3_free(search_statement);
     /* We must check whether the user exists within the
@@ -31,7 +31,7 @@ int user_exists(sqlite3 **sqconn) {
      * within it.
      */
     char exists = sqlite3_column_int(res, 0); // Will be either 0 or 1
-    printf("User Exists: %s\n", exists ? "yes":"no");
+    DEBUG(printf("User Exists: %s\n", exists ? "yes":"no"));
     if(exists) {
         fprintf(stderr, "You user already exists in database.");
         sqlite3_finalize(res);
@@ -51,7 +51,7 @@ int put_runner(runner_t *runner, sqlite3 **sqconn){
             runner->gender,
             runner->height,
             runner->weight);
-    printf("Created sqlite statement\n");
+    DEBUG(printf("Created sqlite statement\n"));
     switch( sqlite3_exec(*sqconn, statement, 0, 0, 0) ){
         case SQLITE_OK:
             printf("Successfully added user to database.\n");

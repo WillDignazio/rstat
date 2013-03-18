@@ -44,26 +44,26 @@ parse_opt (int key, char *arg, struct argp_state *state) {
 
     switch( key ) {
         case 'n': // Create user entry
-            printf("Set create user flag.\n");
+            DEBUG(printf("Set create user flag.\n"));
             arguments->flags |= RSTAT_USER_CREATE;
             break;
         case 'p': // Set database path
-            printf("Set path.\n");
+            DEBUG(printf("Set path.\n"));
             arguments->db_path = arg;
             break;
         case 'c': // Create database
-            printf("Set path and create flag.\n");
+            DEBUG(printf("Set path and create flag.\n"));
             arguments->db_path = arg;
             arguments->flags |= RSTAT_DATABASE_CREATE;
             break;
         case 'a':
-            printf("Set add-run flag.\n");
+            DEBUG(printf("Set add-run flag.\n"));
             arguments->flags |= RSTAT_RUN_ADD;
             break;
         /* Handle default options for end of argument parsing */
         case ARGP_KEY_ARG: // Too many arguments
             if(state->arg_num > 2) {
-                printf("Too many arguments.\n");
+                DEBUG(printf("Too many arguments.\n"));
                 argp_usage(state);
             }
             arguments->args[state->arg_num] = arg;

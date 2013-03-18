@@ -32,7 +32,7 @@ run_t *get_runs(runner_t *runner, sqlite3 **sqconn) {
      * list of them for display. */
     run_t *run_head = run;
     while( sqlite3_step(res) == SQLITE_ROW ) {
-        printf("Found run at %s: ", sqlite3_column_text(res, QUERY_ROW_LOCATION));
+        DEBUG(printf("Found run at %s: ", sqlite3_column_text(res, QUERY_ROW_LOCATION)));
         run_head->next = build_run(sqlite3_column_int(res, QUERY_ROW_UID),
                                 (char*)sqlite3_column_text(res, QUERY_ROW_LOCATION),
                                 sqlite3_column_double(res, QUERY_ROW_TIME),
@@ -60,6 +60,12 @@ run_t *build_run(uid_t uid,
 }
 
 int put_run(run_t *run, sqlite3 **sqconn) {
+
+    if(!user_exists(sqconn)) {
+        fprintf(stderr, "Create a User before adding runs!\n");
+        return RSTAT_FAIL;
+    }
+
     char *statement = sqlite3_mprintf(
             "INSERT INTO runs(uid, location, time, distance, temperature) "
             "VALUES(%d, \"%s\", %lf, %lf, %lf)",
@@ -68,10 +74,10 @@ int put_run(run_t *run, sqlite3 **sqconn) {
             run->time,
             run->distance,
             run->temperature);
-    printf("Created sql run statement.\n");
+    DEBUG(printf("Created sql run statement.\n"));
     switch( sqlite3_exec(*sqconn, statement, 0, 0, 0) ) {
         case SQLITE_OK:
-            printf("Successfully put run into table.");
+            DEBUG(printf("Successfully put run into table."));
             sqlite3_free(statement);
             return RSTAT_SUCCESS;
         default:
@@ -98,7 +104,6 @@ run_t *query_run_info() {
     // We're going to try and to this as safely as possible...
     char loc_buffer[100] = {0};
     printf("Enter Run Location (100 Characters Max):\n");
-    printf("%zd\n", strlen(loc_buffer));
     while(strlen(loc_buffer) <= 0) {
         printf(">");
         memset(loc_buffer, 0, sizeof(loc_buffer));

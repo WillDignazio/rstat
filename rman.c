@@ -15,7 +15,7 @@
 #include "rstat.h"
 
 int create_database(const char *db_path, sqlite3 **sqconn) {
-    printf("Creating %s\n", db_path);
+    DEBUG(printf("Creating %s\n", db_path));
 
     // Best way to check if a file exists that I know of.
     FILE *fp;
@@ -28,13 +28,13 @@ int create_database(const char *db_path, sqlite3 **sqconn) {
         return RSTAT_FAIL;
     }
 
-    printf("Creating handler.\n");
+    DEBUG(printf("Creating handler.\n"));
     /* Open connection with intention to create */
     int v2err = sqlite3_open_v2(db_path, sqconn,
             SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
     switch(v2err) {
         case SQLITE_OK:
-            printf("Create OK.\n");
+            DEBUG(printf("Create OK.\n"));
             /* Create table SQL Statement */
             char *runner_table_sql =
                 "CREATE TABLE IF NOT EXISTS runners("
@@ -46,7 +46,7 @@ int create_database(const char *db_path, sqlite3 **sqconn) {
             /* Execute statement */
             switch( sqlite3_exec(*sqconn, runner_table_sql, 0, 0, 0) ) {
                 case SQLITE_OK:
-                    printf("Successfully created runner table.\n");
+                    DEBUG(printf("Successfully created runner table.\n"));
                     break;
                 default:
                     fprintf(stderr, "%s\n", sqlite3_errmsg(*sqconn));
@@ -64,7 +64,7 @@ int create_database(const char *db_path, sqlite3 **sqconn) {
 
             switch( sqlite3_exec(*sqconn, run_table_sql, 0, 0, 0) )  {
                 case SQLITE_OK:
-                    printf("Successfully create runs table.\n");
+                    DEBUG(printf("Successfully create runs table.\n"));
                     break;
                 default:
                     fprintf(stderr, "%s\n", sqlite3_errmsg(*sqconn));
@@ -85,11 +85,11 @@ int create_database(const char *db_path, sqlite3 **sqconn) {
 int rstat_init(const char *db_path, int flags, sqlite3 **sqconn) {
 
     if( (flags & RSTAT_DATABASE_CREATE) ) {
-        printf("creating database...\n");
+        DEBUG(printf("creating database...\n"));
         int cerr = create_database(db_path, sqconn);
         switch(cerr) {
             case RSTAT_SUCCESS:
-                printf("Successfully created and opened database.\n");
+                DEBUG(printf("Successfully created and opened database.\n"));
                 break;
             case RSTAT_FAIL:
                 fprintf(stderr, "Failed to create and open database.\n");
@@ -98,11 +98,11 @@ int rstat_init(const char *db_path, int flags, sqlite3 **sqconn) {
         }
     }
 
-    printf("Opening path %s\n", db_path);
+    DEBUG(printf("Opening path %s\n", db_path));
     int oerr = sqlite3_open_v2(db_path, sqconn, SQLITE_OPEN_READWRITE, NULL);
     switch(oerr) {
         case SQLITE_OK:
-            printf("OK.\n");
+            DEBUG(printf("OK.\n"));
             break;
         default:
             fprintf(stderr, "error: %s\n", sqlite3_errmsg(*sqconn));
@@ -110,7 +110,7 @@ int rstat_init(const char *db_path, int flags, sqlite3 **sqconn) {
     }
 
     if( (flags & RSTAT_USER_CREATE) ){
-        printf("creating user...\n");
+        DEBUG(printf("creating user...\n"));
         /*
          * Before we go any further, we should check to
          * see if this users UID exists within the database. In
@@ -122,7 +122,7 @@ int rstat_init(const char *db_path, int flags, sqlite3 **sqconn) {
             int perr = put_runner(nrunner, sqconn);
             switch(perr) {
                 case RSTAT_SUCCESS:
-                    printf("Successfully created and put user.\n");
+                    DEBUG(printf("Successfully created and put user.\n"));
                     break;
                 case RSTAT_FAIL:
                     fprintf(stderr, "Failed to create and put user.\n");
@@ -133,12 +133,12 @@ int rstat_init(const char *db_path, int flags, sqlite3 **sqconn) {
     }
 
     if( (flags & RSTAT_RUN_ADD) ) {
-        printf("creating run...\n");
+        DEBUG(printf("creating run...\n"));
         run_t *run = query_run_info();
         int rerr = put_run(run, sqconn);
         switch(rerr) {
             case RSTAT_SUCCESS:
-                printf("Successfully created and put run.\n");
+                DEBUG(printf("Successfully created and put run.\n"));
                 break;
             case RSTAT_FAIL:
                 fprintf(stderr, "Failed to create and put run.\n");

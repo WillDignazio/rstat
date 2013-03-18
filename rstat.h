@@ -7,7 +7,7 @@
 #define RSTAT_DATABASE_CREATE (unsigned char) 0x2
 #define RSTAT_RUN_ADD (unsigned char) 0x4
 
-#if DEBUG
+#ifdef _DEBUG
 #define DEBUG(x) x
 #else
 #define DEBUG(x)
