@@ -25,6 +25,7 @@ static struct argp_option options[] = {
     {"path", 'p', "PATH",  0, "Set rstat database path."},
     {"create", 'c', "PATH",0, "Create a database at the given path."},
     {"new-user", 'n', 0,   0, "Create a new user for yourself"},
+    {"add-run", 'a', 0, 0, "Add a run to the database."},
     { 0 }
 };
 
@@ -55,6 +56,10 @@ parse_opt (int key, char *arg, struct argp_state *state) {
             arguments->db_path = arg;
             arguments->flags |= RSTAT_DATABASE_CREATE;
             break;
+        case 'a':
+            printf("Set add-run flag.\n");
+            arguments->flags |= RSTAT_RUN_ADD;
+            break;
         /* Handle default options for end of argument parsing */
         case ARGP_KEY_ARG: // Too many arguments
             if(state->arg_num > 2) {
@@ -83,9 +88,7 @@ int main(int argc, char *argv[]) {
     /* Initialize the rstat client */
     sqlite3 *conn = NULL;
     rstat_init(arguments.db_path, arguments.flags, &conn);
-    rstat_close(&conn);
 
     /* Close up the rstat client */
     return rstat_close(&conn);
 }
-

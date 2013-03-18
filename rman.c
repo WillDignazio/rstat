@@ -131,6 +131,22 @@ int rstat_init(const char *db_path, int flags, sqlite3 **sqconn) {
             }
         }
     }
+
+    if( (flags & RSTAT_RUN_ADD) ) {
+        printf("creating run...\n");
+        run_t *run = query_run_info();
+        int rerr = put_run(run, sqconn);
+        switch(rerr) {
+            case RSTAT_SUCCESS:
+                printf("Successfully created and put run.\n");
+                break;
+            case RSTAT_FAIL:
+                fprintf(stderr, "Failed to create and put run.\n");
+                free_run(run);
+                return RSTAT_FAIL;
+        }
+        free_run(run);
+    }
     // If we got to here, we should be good to go.
     return RSTAT_SUCCESS;
 }

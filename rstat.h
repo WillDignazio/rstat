@@ -5,6 +5,13 @@
 
 #define RSTAT_USER_CREATE (unsigned char) 0x1
 #define RSTAT_DATABASE_CREATE (unsigned char) 0x2
+#define RSTAT_RUN_ADD (unsigned char) 0x4
+
+#if DEBUG
+#define DEBUG(x) x
+#else
+#define DEBUG(x)
+#endif
 
 enum {
     RSTAT_SUCCESS,

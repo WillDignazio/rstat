@@ -61,7 +61,7 @@ run_t *build_run(uid_t uid,
 
 int put_run(run_t *run, sqlite3 **sqconn) {
     char *statement = sqlite3_mprintf(
-            "INSERT INTO run(uid, location, time, distance, temperature) "
+            "INSERT INTO runs(uid, location, time, distance, temperature) "
             "VALUES(%d, \"%s\", %lf, %lf, %lf)",
             run->uid,
             run->location,

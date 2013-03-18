@@ -112,6 +112,7 @@ runner_t *query_user_info() {
     runner_t *runner = calloc(sizeof(runner_t), 1);
     runner->username = get_username();
     runner->uid = getuid();
+    runner->next = NULL;
 
 gender:
     printf("Gender (M || F): ");
