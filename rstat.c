@@ -1,8 +1,7 @@
 /*
- * Will Dignazio
- * Running Stats (rstat) 2013
+ * Copyright (c) 2013, Will Dignazio
+ * See the file LICENSE file for copying permission.
  */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
